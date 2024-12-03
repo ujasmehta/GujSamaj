@@ -1,216 +1,232 @@
+import React, { useState } from 'react';
+import axios from 'axios';
 import {
   Box,
   Container,
   Typography,
-  Grid,
-  Card,
-  CardContent,
   TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
   MenuItem,
-  Stack,
+  Grid,
+  Paper,
+  Snackbar,
+  Alert
 } from '@mui/material';
-import { useState } from 'react';
+
+const DONATION_PURPOSES = [
+  'Education',
+  'Healthcare',
+  'Temple Maintenance',
+  'Community Service',
+  'Other'
+];
+
+const PAYMENT_METHODS = ['UPI', 'Card', 'NetBanking', 'Cash'];
 
 const Fundraiser = () => {
-  // Add configurable cause categories
-  const causeCategories = [
-    'Health',
-    'Education',
-    'Building Renovation',
-    'Community Support',
-    'Environmental Projects'
-  ];
-  
-  const [donationData, setDonationData] = useState({
-    name: '',
-    email: '',
+  const [formData, setFormData] = useState({
+    donor: {
+      name: '',
+      email: '',
+      phone: '',
+      address: ''
+    },
     amount: '',
+    purpose: '',
     paymentMethod: '',
-    message: '',
-    causeCategory: '', // Add cause category to the state
+    notes: ''
   });
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Handle donation submission here
-    console.log('Donation submitted:', donationData);
-  };
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
 
   const handleChange = (e) => {
-    setDonationData({
-      ...donationData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+    if (name.includes('.')) {
+      const [parent, child] = name.split('.');
+      setFormData(prev => ({
+        ...prev,
+        [parent]: {
+          ...prev[parent],
+          [child]: value
+        }
+      }));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }));
+    }
   };
 
-  const causes = [
-    {
-      title: 'Education Fund',
-      description: 'Support education for underprivileged students',
-      target: '₹5,00,000',
-      raised: '₹2,50,000',
-    },
-    {
-      title: 'Temple Renovation',
-      description: 'Help maintain and renovate our spiritual spaces',
-      target: '₹10,00,000',
-      raised: '₹6,00,000',
-    },
-    {
-      title: 'Community Kitchen',
-      description: 'Support our food distribution program',
-      target: '₹3,00,000',
-      raised: '₹1,50,000',
-    },
-  ];
+
+
+// ...
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const response = await axios.post('http://localhost:5000/api/donations', formData);
+
+    if (response.data.success) {
+      setSnackbar({
+        open: true,
+        message: 'Donation submitted successfully!',
+        severity: 'success'
+      });
+      // Reset form
+      setFormData({
+        donor: { name: '', email: '', phone: '', address: '' },
+        amount: '',
+        purpose: '',
+        paymentMethod: '',
+        notes: ''
+      });
+    } else {
+      throw new Error(response.data.message);
+    }
+  } catch (error) {
+    console.error('Detailed error:', error);
+  setSnackbar({
+    open: true,
+    message: error.message || 'Failed to submit donation',
+    severity: 'error'
+  });
+  }
+};
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
 
   return (
-    <>
-      <Box
-        sx={{
-          bgcolor: 'primary.main',
-          color: 'white',
-          py: 6,
-          mb: 6,
-        }}
-      >
-        <Container>
-          <Typography variant="h2" align="center" gutterBottom>
-            Support Our Cause
-          </Typography>
-          <Typography variant="h5" align="center" paragraph>
-            Your contribution makes a difference
-          </Typography>
-        </Container>
+    <Container maxWidth="md">
+      <Box my={4}>
+        <Typography variant="h4" component="h1" gutterBottom>
+          Make a Donation
+        </Typography>
+        <Paper elevation={3}>
+          <Box p={3}>
+            <form onSubmit={handleSubmit}>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Name"
+                    name="donor.name"
+                    value={formData.donor.name}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Email"
+                    name="donor.email"
+                    type="email"
+                    value={formData.donor.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Phone"
+                    name="donor.phone"
+                    value={formData.donor.phone}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Address"
+                    name="donor.address"
+                    value={formData.donor.address}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    label="Amount"
+                    name="amount"
+                    type="number"
+                    value={formData.amount}
+                    onChange={handleChange}
+                    required
+                  />
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    select
+                    label="Purpose"
+                    name="purpose"
+                    value={formData.purpose}
+                    onChange={handleChange}
+                    required
+                  >
+                    {DONATION_PURPOSES.map((purpose) => (
+                      <MenuItem key={purpose} value={purpose}>
+                        {purpose}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                  <TextField
+                    fullWidth
+                    select
+                    label="Payment Method"
+                    name="paymentMethod"
+                    value={formData.paymentMethod}
+                    onChange={handleChange}
+                    required
+                  >
+                    {PAYMENT_METHODS.map((method) => (
+                      <MenuItem key={method} value={method}>
+                        {method}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
+                <Grid item xs={12}>
+                  <TextField
+                    fullWidth
+                    label="Notes"
+                    name="notes"
+                    multiline
+                    rows={4}
+                    value={formData.notes}
+                    onChange={handleChange}
+                  />
+                </Grid>
+                <Grid item xs={12}>
+                  <Button type="submit" variant="contained" color="primary">
+                    Submit Donation
+                  </Button>
+                </Grid>
+              </Grid>
+            </form>
+          </Box>
+        </Paper>
       </Box>
-
-      <Container sx={{ py: 4 }}>
-        <Grid container spacing={4}>
-          <Grid item xs={12} md={7}>
-            <Typography variant="h4" gutterBottom>
-              Current Initiatives
-            </Typography>
-            <Stack spacing={3}>
-              {causes.map((cause, index) => (
-                <Card key={index}>
-                  <CardContent>
-                    <Typography variant="h5" gutterBottom>
-                      {cause.title}
-                    </Typography>
-                    <Typography paragraph>{cause.description}</Typography>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <Typography color="primary">Target: {cause.target}</Typography>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <Typography color="secondary">
-                          Raised: {cause.raised}
-                        </Typography>
-                      </Grid>
-                    </Grid>
-                  </CardContent>
-                </Card>
-              ))}
-            </Stack>
-          </Grid>
-
-          <Grid item xs={12} md={5}>
-            <Card>
-              <CardContent>
-                <Typography variant="h5" gutterBottom>
-                  Make a Donation
-                </Typography>
-                <form onSubmit={handleSubmit}>
-                  <Stack spacing={3}>
-                    <TextField
-                      fullWidth
-                      label="Name"
-                      name="name"
-                      value={donationData.name}
-                      onChange={handleChange}
-                      required
-                    />
-                    <TextField
-                      fullWidth
-                      label="Email"
-                      name="email"
-                      type="email"
-                      value={donationData.email}
-                      onChange={handleChange}
-                      required
-                    />
-                    <FormControl fullWidth required>
-                      <InputLabel>Cause Category</InputLabel>
-                      <Select
-                        name="causeCategory"
-                        value={donationData.causeCategory}
-                        onChange={handleChange}
-                        label="Cause Category"
-                      >
-                        {causeCategories.map((category) => (
-                          <MenuItem key={category} value={category}>
-                            {category}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-                    <FormControl fullWidth required>
-                      <InputLabel>Amount</InputLabel>
-                      <Select
-                        name="amount"
-                        value={donationData.amount}
-                        onChange={handleChange}
-                        label="Amount"
-                      >
-                        <MenuItem value={1000}>₹1,000</MenuItem>
-                        <MenuItem value={2000}>₹2,000</MenuItem>
-                        <MenuItem value={5000}>₹5,000</MenuItem>
-                        <MenuItem value={10000}>₹10,000</MenuItem>
-                        <MenuItem value="other">Other Amount</MenuItem>
-                      </Select>
-                    </FormControl>
-                    <FormControl fullWidth required>
-                      <InputLabel>Payment Method</InputLabel>
-                      <Select
-                        name="paymentMethod"
-                        value={donationData.paymentMethod}
-                        onChange={handleChange}
-                        label="Payment Method"
-                      >
-                        <MenuItem value="upi">UPI</MenuItem>
-                        <MenuItem value="card">Credit/Debit Card</MenuItem>
-                        <MenuItem value="netbanking">Net Banking</MenuItem>
-                      </Select>
-                    </FormControl>
-                    <TextField
-                      fullWidth
-                      label="Message (Optional)"
-                      name="message"
-                      multiline
-                      rows={3}
-                      value={donationData.message}
-                      onChange={handleChange}
-                    />
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      color="primary"
-                      size="large"
-                    >
-                      Donate Now
-                    </Button>
-                  </Stack>
-                </form>
-              </CardContent>
-            </Card>
-          </Grid>
-        </Grid>
-      </Container>
-    </>
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={6000}
+        onClose={handleCloseSnackbar}
+      >
+        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity}>
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
+    </Container>
   );
 };
 
