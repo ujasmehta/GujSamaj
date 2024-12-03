@@ -1,188 +1,119 @@
-import {
-    Box,
-    Container,
-    Typography,
-    Button,
-    Grid,
-    Card,
-    CardContent,
-} from '@mui/material';
-
+import React from 'react';
 import Slider from 'react-slick';
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
+import { Box, Container, Typography, Button } from '@mui/material';
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
-const bannerImages = [
-    {
-        url: 'https://source.unsplash.com/1600x900/?temple',
-        title: 'Cultural Heritage',
-        description: 'Preserving our rich traditions and cultural values'
-    },
-    {
-        url: 'https://source.unsplash.com/1600x900/?education',
-        title: 'Education Initiative',
-        description: 'Supporting the future through quality education'
-    },
-    {
-        url: 'https://source.unsplash.com/1600x900/?community',
-        title: 'Community Service',
-        description: 'Building stronger communities together'
-    }
+const carouselItems = [
+  {
+    image: '/images/slide1.jpg',
+    title: 'Make a Difference',
+    description: 'Your support can change lives. Join us in making the world a better place.',
+  },
+  {
+    image: '/images/slide2.jpg',
+    title: 'Support Our Cause',
+    description: 'Every donation counts. Help us reach more people in need.',
+  },
+  {
+    image: '/images/slide3.jpg',
+    title: 'Create Impact',
+    description: 'Together we can create lasting impact in our communities.',
+  },
 ];
 
 const Home = () => {
-    const scrollToSection = (id) => {
-        const element = document.getElementById(id);
-        if (element) {
-            element.scrollIntoView({ behavior: 'smooth' });
-        }
-    };
+  const settings = {
+    dots: true,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    pauseOnHover: true,
+  };
 
-    const carouselSettings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        arrows: true
-    };
-
-    return (
-        <Box sx={{ width: '100%' }}>
-            <Box sx={{ width: '100%', height: '100vh', position: 'relative' }}>
-                <Slider {...carouselSettings}>
-                    {bannerImages.map((banner, index) => (
-                        <Box key={index}>
-                            <Box
-                                sx={{
-                                    height: '100vh',
-                                    background: `linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url(${banner.url})`,
-                                    backgroundSize: 'cover',
-                                    backgroundPosition: 'center',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}
-                            >
-                                <Container>
-                                    <Typography
-                                        variant="h2"
-                                        component="h1"
-                                        align="center"
-                                        gutterBottom
-                                        sx={{ color: 'white', mb: 2 }}
-                                    >
-                                        {banner.title}
-                                    </Typography>
-                                    <Typography
-                                        variant="h5"
-                                        align="center"
-                                        sx={{ color: 'white', mb: 4 }}
-                                    >
-                                        {banner.description}
-                                    </Typography>
-                                </Container>
-                            </Box>
-                        </Box>
-                    ))}
-                </Slider>
-            </Box>
-            <Box
+  return (
+    <Box sx={{ width: '100%', overflow: 'hidden' }}>
+      <Box sx={{ width: '50%', margin: '0 auto' }}>
+        <Slider {...settings}>
+          {carouselItems.map((item, index) => (
+            <Box key={index}>
+              <Box
                 sx={{
-                    bgcolor: 'primary.main',
-                    color: 'white',
-                    py: 15,
-                    background: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7))`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                    minHeight: '100vh',
-                    display: 'flex',
-                    alignItems: 'center',
+                  position: 'relative',
+                  height: '60vh',
+                  backgroundImage: `url(${item.image})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  '&::before': {
+                    content: '""',
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    backgroundColor: 'rgba(0,0,0,0.5)',
+                  },
                 }}
-            >
-                <Container>
-                    <Typography
-                        variant="h1"
-                        component="h1"
-                        align="center"
-                        gutterBottom
-                        sx={{ mb: 4 }}
-                    >
-                        Shri Bangalore Gujarati BrahmSamaj Trust
-                    </Typography>
-                    <Typography
-                        variant="h5"
-                        align="center"
-                        paragraph
-                        sx={{ mb: 4, maxWidth: '800px', mx: 'auto' }}
-                    >
-                        The Brahmin Samaj should strive to be a pillar of spiritual,
-                        educational, and social progress, while adapting to modern needs and
-                        challenges. A balanced focus on tradition, reform, and service is
-                        important.
-                    </Typography>
-                    <Box sx={{ textAlign: 'center' }}>
-                        <Button
-                            variant="contained"
-                            color="secondary"
-                            size="large"
-                            onClick={() => scrollToSection('activities')}
-                            sx={{ mr: 2 }}
-                        >
-                            Our Activities
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            size="large"
-                            onClick={() => scrollToSection('contact')}
-                            sx={{ color: 'white', borderColor: 'white' }}
-                        >
-                            Contact Us
-                        </Button>
-                    </Box>
-                </Container>
+              >
+                <Box
+                  sx={{
+                    position: 'absolute',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
+                    textAlign: 'center',
+                    color: 'white',
+                    width: '80%',
+                    zIndex: 1,
+                  }}
+                >
+                  <Typography variant="h3" component="h1" gutterBottom>
+                    {item.title}
+                  </Typography>
+                  <Typography variant="h6" paragraph>
+                    {item.description}
+                  </Typography>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    size="large"
+                    href="#fundraiser"
+                    sx={{ mt: 2 }}
+                  >
+                    Donate Now
+                  </Button>
+                </Box>
+              </Box>
             </Box>
+          ))}
+        </Slider>
+      </Box>
 
-            <Container sx={{ py: 8 }}>
-                <Typography variant="h2" align="center" gutterBottom>
-                    Our Mission
-                </Typography>
-                <Grid container spacing={4} sx={{ mt: 4 }}>
-                    {[
-                        {
-                            title: 'Spiritual Growth',
-                            description:
-                                'Promoting spiritual awareness and traditional values in modern context',
-                        },
-                        {
-                            title: 'Education',
-                            description:
-                                'Supporting educational initiatives and scholarship programs',
-                        },
-                        {
-                            title: 'Community Service',
-                            description:
-                                'Organizing social welfare activities and community support',
-                        },
-                    ].map((item) => (
-                        <Grid item xs={12} md={4} key={item.title}>
-                            <Card sx={{ height: '100%' }}>
-                                <CardContent>
-                                    <Typography variant="h5" component="h3" gutterBottom>
-                                        {item.title}
-                                    </Typography>
-                                    <Typography>{item.description}</Typography>
-                                </CardContent>
-                            </Card>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Container>
+      <Container maxWidth="lg" sx={{ mt: 8, mb: 8 }}>
+        <Typography variant="h4" component="h2" gutterBottom align="center">
+          Welcome to Our NGO
+        </Typography>
+        <Typography variant="body1" paragraph align="center">
+          We are dedicated to making a positive impact in our community through various
+          initiatives and programs. Your support helps us reach more people in need
+          and create lasting change.
+        </Typography>
+        <Box sx={{ textAlign: 'center', mt: 4 }}>
+          <Button
+            variant="contained"
+            color="primary"
+            size="large"
+            href="#activities"
+          >
+            Learn More
+          </Button>
         </Box>
-    );
+      </Container>
+    </Box>
+  );
 };
 
 export default Home;

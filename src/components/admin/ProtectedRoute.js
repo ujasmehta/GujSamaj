@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { CircularProgress, Box } from '@mui/material';
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 const ProtectedRoute = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
@@ -20,7 +20,7 @@ const ProtectedRoute = ({ children }) => {
         }
 
         // Decode token to check expiration
-        const decoded = jwt_decode(token);
+        const decoded = jwtDecode(token);
         const currentTime = Date.now() / 1000;
         
         if (decoded.exp < currentTime) {
